@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title>Ubij zver</title>
+</head>
+
+<body>
+<div id="main">
+<h1>Ubij zver</h1>
+<div id="izpisZgodba"></div>
+<div id="zverMoc"></div>
+<div id="zver"></div>
+<div id="ukazi">
+<div id="pesek"><div id="pesekSlika"></div><div id="pesekOpis"></div></div>
+<div id="pobozaj"><div id="pobozajSlika"></div><div id="pobozajOpis"></div></div>
+<div id="pobeg"><div id="pobegSlika"></div><div id="pobegOpis"></div></div>
+</div>
+<center><button id="zacetek">Prični z igranjem</button></center>
+</div>
+
+
+
+<script>
+var gumbZacetek = document.getElementById("zacetek");
+var zgodbaIzpis = document.getElementById("izpisZgodba");
+var stanjeZver = "";
+var stanjeUkazi = "";
+var mocZver = 100;
+var zverStanje = "zverZiva";
+var igralecStanje = "igralecZiv";
+
+function obZagonu() {
+	gumbZacetek.addEventListener("click", zacetek, false)
+}
+function zacetek() {
+	var zgodba1 = ["Si popotnik, ki potuje po svetu.", "Nekega dne v Afriki zaslišiš čuden zvok", "<h2>ARGHHHHHHHH</h2>"];
+	zgodbaIzpis.innerHTML = "Tvoja pustolovščina se bo pričela!";
+	zgodba(zgodba1);
+	document.getElementById("zacetek").innerHTML="Od začetka";
+	gumbZacetek.addEventListener("click", znova, false);
+}
+function znova() {
+	window.location.reload()
+}
+function zgodba(arrayZgodba) {
+	var zgodba = arrayZgodba;
+	var pozicijaZgodbe = 0;
+	function izpisZgodbe() {
+		if (pozicijaZgodbe < (zgodba.length - 1)) {
+			zgodbaIzpis.innerHTML = zgodba[pozicijaZgodbe];
+			pozicijaZgodbe++;
+		}
+		else {
+			zgodbaIzpis.innerHTML = zgodba[pozicijaZgodbe];
+			clearInterval(potekZgodbe);
+			if (stanjeZver != "zverPrikazana") {
+				zver();
+			}
+			else if (stanjeUkazi != "ukaziPrikazani") {
+				ukazi();
+			}
+		}
+	}
+	var potekZgodbe = setInterval(izpisZgodbe,2000);
+}
+function zver() {
+	prikaziZver();
+	var zgodba2 = ["Pojavi se pošast!", "Postaneš ves prestrašen in neveš kaj bi storil!", "Izberi ukaz, ki ti najbolj ustreza."];
+	zgodba(zgodba2);
+}
+function prikaziZver() {
+	document.getElementById("zver").innerHTML="<img src='boss1.png' />";
+	document.getElementById("zverMoc").setAttribute("style", "background-color:#61ae4a");
+	stanjeZver = "zverPrikazana";
+}
+function ukazi() {
+	if (zverStanje === "zverMrtva") { 
+		document.getElementById("zver").innerHTML="<img src='boss1down.png' />";
+		return; 
+	}
+	if (igralecStanje === "igralecMrtev") { 
+		document.getElementById("zver").innerHTML="<img src='igralecdown.png' />";
+		return;
+	}
+	document.getElementById("pesekSlika").innerHTML="<img src='pesek.png' />";
+	document.getElementById("pobozajSlika").innerHTML="<img src='pobozaj.png' />";
+	document.getElementById("pobegSlika").innerHTML="<img src='pobegni.png' />";
+	stanjeUkazi = "ukaziPrikazani";
+	var ukazPrekoPesek = document.getElementById("pesekSlika");
+	var ukazPrekoPobozaj = document.getElementById("pobozajSlika");
+	var ukazPrekoPobeg = document.getElementById("pobegSlika");
+	ukazPrekoPesek.addEventListener("mouseover", function() { ukazMiskaNot("pesekOpis"); }, false);
+	ukazPrekoPobozaj.addEventListener("mouseover", function() { ukazMiskaNot("pobozajOpis"); }, false);
+	ukazPrekoPobeg.addEventListener("mouseover", function() { ukazMiskaNot("pobegOpis"); }, false);
+	ukazPrekoPesek.addEventListener("mouseout", function() { ukazMiskaVen("pesekOpis"); }, false);
+	ukazPrekoPobozaj.addEventListener("mouseout", function() { ukazMiskaVen("pobozajOpis"); }, false);
+	ukazPrekoPobeg.addEventListener("mouseout", function() { ukazMiskaVen("pobegOpis"); }, false);
+	ukazPrekoPesek.addEventListener("click", function() { ukazMiskaVen("pesekOpis"); ukazNaredi("pesek"); }, false);
+	ukazPrekoPobozaj.addEventListener("click", function() { ukazMiskaVen("pobozajOpis"); ukazNaredi("pobozaj"); }, false);
+	ukazPrekoPobeg.addEventListener("click", function() { ukazMiskaVen("pobegOpis"); ukazNaredi("pobegni"); }, false);
+	function ukazMiskaNot(opis) {
+		if (opis === "pesekOpis") {
+			document.getElementById(opis).innerHTML="Zveri vržeš pesek, ki jo poškoduje za 20-30 točk.";
+		}
+		else if (opis === "pobozajOpis") {
+			document.getElementById(opis).innerHTML="Pobožaš zver in upaš na najboljše.";
+		}
+		else if (opis === "pobegOpis") {
+			document.getElementById(opis).innerHTML="Poskušaš zbežati vstran.";
+		}
+	}
+	function ukazMiskaVen(opis) {
+			document.getElementById(opis).innerHTML="";
+	}
+}
+function ukazNaredi(ukaz) {
+	var zgodbaUkaz;
+	stanjeUkazi = "ukaziNeprikazani";
+	document.getElementById("pesekSlika").innerHTML="";
+	document.getElementById("pobozajSlika").innerHTML="";
+	document.getElementById("pobegSlika").innerHTML="";
+	if (ukaz === "pesek") {
+		var ukazPesekSkoda = Math.floor(Math.random()*11 +20);
+		mocZver -= ukazPesekSkoda;
+		if (mocZver < 1) {
+			zverStanje = "zverMrtva";
+			zgodbaUkaz = ["Zveri vržeš pesek", "Poškoduješ jo za " + ukazPesekSkoda + " točk.", "Pokončal si zver.", "Pravkar si ubil edinega dinozavra na svetu", "<h2>IDIOT</h2>"];
+			document.getElementById("zverMoc").style.width ="0px";
+		}
+		else { 
+			zgodbaUkaz = ["Zveri vržeš pesek", "Poškoduješ jo za " + ukazPesekSkoda + " točk.", "Zver preživi", "Izberi naslednji ukaz"];
+			document.getElementById("zverMoc").style.width = mocZver * 3 + "px";
+		}
+	}
+	else if (ukaz === "pobozaj") {
+		var ukazPobozajSkoda = Math.floor(Math.random()*2 +1);
+		if (ukazPobozajSkoda === 1) {
+			zgodbaUkaz = ["Približaš se zveri in jo pobožaš", "Zver te pogleda", "Odpre usta in te poje", "Umreš in noben te ne pogreša."];
+			igralecStanje = "igralecMrtev";
+		}
+		else {
+			zgodbaUkaz = ["Približaš se zveri in jo pobožaš", "Zver te pogleda", "in te poliže po obrazu.", "izberi naslednji ukaz"];
+		}
+	}
+	else {
+		zgodbaUkaz = ["Obrneš se vstran in začneš teči", "tečeš, tečeš, tečeš", "Obrneš se nazaj in zver je takoj za tabo", "izberi naslednji ukaz"];
+	}
+	zgodba(zgodbaUkaz);
+}
+obZagonu();
+</script>
+
+
+</body>
+</html>
